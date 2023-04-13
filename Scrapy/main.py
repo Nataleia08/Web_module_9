@@ -41,7 +41,7 @@ class MainSpider(scrapy.Spider):
     start_urls = ["http://quotes.toscrape.com/"]
     custom_settings = {"FEED_":}
 
-    def parser(self, response, *arrgs):
+    def parser(self, response, *args):
         for el in response.xpath("/html//div@clas="):
             tags = [e.strip() for e in el.xpath("div@clas='tags']/a[@class")]
             author = el.xpath("span/small[class='author'")
