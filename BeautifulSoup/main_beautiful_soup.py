@@ -12,22 +12,19 @@ def save_info(name_file, dump_info):
 def get_info(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'lxml')
-    authors_list = []
     authors_html = soup.find_all('small', class_='author')
-    for author in authors_html:
-        authors_list.append(author.text)
-    print(authors_list)
-    quotes_list = []
-    quotes = soup.find_all('span', class_='text')
-    for q in quotes:
-        quotes_list.append(q.text)
-    print(quotes_list)
-    tags_list = []
-    tags = soup.find_all('div', class_='tags')
-    for t in tags:
-        t_new = t.text.removeprefix('\n            Tags:\n            ').removesuffix('\n').strip().split('\n')
-        tags_list.extend(t_new)
-    print(tags_list)
+    quotes_html = soup.find_all('span', class_='text')
+    tags_html = soup.find_all('div', class_='tags')
+    tags_all_list = []
+    for i in range(len(authors_html)):
+        quotes_list = {}
+        quotes_list["author"] = authors_html[i].text
+        quotes_list["author"] = quotes_html[i].text
+        quotes_list["tags"] = tags_html[i].text.removeprefix('\n            Tags:\n            ').removesuffix('\n').strip().split('\n')
+        save_info("quotes.json", quotes_list)
+        tags_all_list.extend(quotes_list["tags"])
+
+    return set(tags_all_list)
 
 
     list_author_url = soup.find_all('about')
@@ -38,8 +35,13 @@ def get_info(url):
 
 
 def main():
-    for i in range(1,11):
+    tags_list = get_info(base_url)
+    for i in range(2,11):
         new_url = base_url + "/page/" + str(i)
+        tags_list.union(get_info(new_url))
+    print(tags_list)
+    for t in tags_list:
+        new_url = base_url + "/tag/" + t
         get_info(new_url)
 
 
