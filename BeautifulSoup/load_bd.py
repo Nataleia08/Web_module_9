@@ -1,9 +1,9 @@
-from MongoDB.models import Authors, Quotes
+from models import Authors, Quotes
 import json
 import connect_bd
 from mongoengine.errors import OperationError
 
-with open("authors.json", "r") as fh:
+with open("author.json", "r") as fh:
     list_a = json.load(fh)
 for a in list_a:
     try:
