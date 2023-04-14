@@ -7,8 +7,7 @@ base_url = 'http://quotes.toscrape.com/'
 
 def save_info(name_file, dump_info):
     with open(name_file, "a", encoding='utf-8') as fh:
-        json.dump(dump_info, fh)
-        json.dump("\n",fh)
+        json.dump(dump_info, fh, sort_keys=True, indent= 2)
 
 def get_info_quotes(url):
     response = requests.get(url)
@@ -76,7 +75,6 @@ def main():
                 in_list = True
         if not in_list:
             author_list.append(k)
-    print(author_list)
     # print(author_list)
     save_info("author.json", author_list)
 
