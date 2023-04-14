@@ -3,8 +3,8 @@ import json
 import connect_bd
 from mongoengine.errors import OperationError
 
-with open("author.json", "r") as fh:
-    list_a = json.load(fh)
+with open("author.json", "r", encoding='utf-8') as fh:
+    list_a = json.load(fh) #.decode("utf-8")
 for a in list_a:
     try:
         na = Authors(fullname= a["fullname"], born_date = a["born_date"], born_location = a["born_location"], description = a["description"])
