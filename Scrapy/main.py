@@ -44,19 +44,19 @@ class MainSpider(scrapy.Spider):
     name = "main_spider"
     allowed_domains = ["quotes.toscrape.com/"]
     start_urls = ["http://quotes.toscrape.com/"]
-    custom_settings = {"ITEM_PIPELINES": {MainPipline:100}}
+    custom_settings = {"ITEM_PIPELINES": {MainPipline: 100}}
 
-    def parser(self, response, *args):
-        for el in response.xpath("/html//div@clas="):
-            tags = [e.strip() for e in el.xpath("div@clas='tags']/a[@class")]
-            author = el.xpath("span/small[class='author'")
-            quote = el.xpath("span@class='text']/text()")
+    def parse(self, response, *args):
+        for el in response.xpath("/html//div[@class='quote']"):
+            tags = [e.strip() for e in el.xpath("div[@class='tags']/a[@class='tag']/text()").extract()]
+            author = el.xpath("span/small[@class='author']/text()").get().strip()
+            quote = el.xpath("span[@class='text']/text()").get().strip()
+            yield response.follow(url=self.start_urls[0] + el.xpath("span/a/@href").get().strip(), callback=self.parse_author)
             yield QuoteItem(tags=tags, author=author, quote=quote)
-            yield response.follow(url=self.start_urls[0] + el.xpath("span/a/@href").get().strip(),
-                                  callback=self.parse_author)
-            next_link = response.xpath("//li[@class='next']/a/@href").get()
-            if next_link:
-                yield scrapy.Request(url=self.start_urls[0] + next_link.strip())
+        next_link = response.xpath("//li[@class='next']/a/@href").get()
+        if next_link is not None:
+            yield response.follow(url=self.start_urls[0] + next_link.strip(), callback = self.parse)
+                #scrapy.Request(url=self.start_urls[0] + next_link.strip())
 
     def parse_author(self, response, *args):
         content = response.xpath("/html//div[@class='author-details']")
@@ -64,7 +64,7 @@ class MainSpider(scrapy.Spider):
         born_date = content.xpath("p/span[@class='author-born-date']/text()").get().strip()
         born_location = content.xpath("p/span[@class='author-born-location']/text()").get().strip()
         description = content.xpath("div[@class='author-description']/text()").get().strip()
-        yield AuthorItem(fullname=fullname, born_date=born_date, born_location=born_location, description=description)
+        return AuthorItem(fullname=fullname, born_date=born_date, born_location=born_location, description=description)
 
 
 if __name__ == "__main__":
