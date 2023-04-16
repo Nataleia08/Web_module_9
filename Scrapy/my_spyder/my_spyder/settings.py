@@ -1,4 +1,4 @@
-# Scrapy settings for test_spyder project
+# Scrapy settings for my_spyder project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,14 +7,14 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = "test_spyder"
+BOT_NAME = "my_spyder"
 
-SPIDER_MODULES = ["test_spyder.spiders"]
-NEWSPIDER_MODULE = "test_spyder.spiders"
+SPIDER_MODULES = ["my_spyder.spiders"]
+NEWSPIDER_MODULE = "my_spyder.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = "test_spyder (+http://www.yourdomain.com)"
+#USER_AGENT = "my_spyder (+http://www.yourdomain.com)"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -45,13 +45,13 @@ ROBOTSTXT_OBEY = True
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    "test_spyder.middlewares.TestSpyderSpiderMiddleware": 543,
+#    "my_spyder.middlewares.MySpyderSpiderMiddleware": 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    "test_spyder.middlewares.TestSpyderDownloaderMiddleware": 543,
+#    "my_spyder.middlewares.MySpyderDownloaderMiddleware": 543,
 #}
 
 # Enable or disable extensions
@@ -63,7 +63,7 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 #ITEM_PIPELINES = {
-#    "test_spyder.pipelines.TestSpyderPipeline": 300,
+#    "my_spyder.pipelines.MySpyderPipeline": 300,
 #}
 
 # Enable and configure the AutoThrottle extension (disabled by default)

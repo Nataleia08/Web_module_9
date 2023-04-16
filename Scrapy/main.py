@@ -1,10 +1,12 @@
 import json
 
 import scrapy
-from scrapy.item import Item, Field, Spider
+from scrapy.item import Item, Field
+# import Spider
 from scrapy.crawler import CrawlerProcess
 from itemadapter import ItemAdapter
 import json
+
 
 class QuoteItem(Item):
     tags = Field()
@@ -14,13 +16,15 @@ class QuoteItem(Item):
 
 class AuthorItem(Item):
     fullname = Field()
-    date_born = Field()
+    born_date = Field()
     born_location = Field()
     description = Field()
+
 
 class MainPipline:
     quotes = []
     authors = []
+
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
         if "fullname" in adapter.keys():
@@ -31,35 +35,41 @@ class MainPipline:
 
     def close_spider(self, spider):
         with open("quotes.json", "w", encoding='utf-8') as fh:
-            json.dump(self.quotes, fh)
+            json.dump(self.quotes, fh, ensure_ascii=False)
         with open("authors.json", "w", encoding='utf-8') as fh:
-            json.dump(self.authors, fh)
+            json.dump(self.authors, fh, ensure_ascii=False)
+
 
 class MainSpider(scrapy.Spider):
     name = "main_spider"
-    allowed_domains = ["http://quotes.toscrape.com/"]
+    allowed_domains = ["quotes.toscrape.com/"]
     start_urls = ["http://quotes.toscrape.com/"]
-    custom_settings = {"FEED_":}
+    custom_settings = {"ITEM_PIPELINES": {MainPipline:100}}
 
     def parser(self, response, *args):
         for el in response.xpath("/html//div@clas="):
             tags = [e.strip() for e in el.xpath("div@clas='tags']/a[@class")]
             author = el.xpath("span/small[class='author'")
             quote = el.xpath("span@class='text']/text()")
-            yield QuoteItem(tags = tags, author = author, quote = quote)
-            yield response.follow(url= self.start_urls[0], callback = self.pars_author)
+            yield QuoteItem(tags=tags, author=author, quote=quote)
+            yield response.follow(url=self.start_urls[0] + el.xpath("span/a/@href").get().strip(),
+                                  callback=self.parse_author)
+            next_link = response.xpath("//li[@class='next']/a/@href").get()
+            if next_link:
+                yield scrapy.Request(url=self.start_urls[0] + next_link.strip())
 
     def parse_author(self, response, *args):
         content = response.xpath("/html//div[@class='author-details']")
-        fullname = content.xpath("")
-        date_born = content.xpath("")
-        born_location = content.xpath("")
-        description = content.xpath("")
-        yield AuthorItem(fullname = fullname, )
-
+        fullname = content.xpath("h3[@class='autor-title']/text()").get().strip()
+        born_date = content.xpath("p/span[@class='author-born-date']/text()").get().strip()
+        born_location = content.xpath("p/span[@class='author-born-location']/text()").get().strip()
+        description = content.xpath("div[@class='author-description']/text()").get().strip()
+        yield AuthorItem(fullname=fullname, born_date=born_date, born_location=born_location, description=description)
 
 
 if __name__ == "__main__":
     process = CrawlerProcess()
     process.crawl(MainSpider)
     process.start()
+    process.join()
+    print("The end")
