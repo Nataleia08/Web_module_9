@@ -6,6 +6,7 @@ from scrapy.item import Item, Field
 from scrapy.crawler import CrawlerProcess
 from itemadapter import ItemAdapter
 import json
+import requests
 
 
 class QuoteItem(Item):
